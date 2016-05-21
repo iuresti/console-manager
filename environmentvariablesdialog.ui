@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EnvironmentVariablesDialog</class>
+ <widget class="QDialog" name="EnvironmentVariablesDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>337</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableView" name="envVars">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <attribute name="verticalHeaderVisible">
+      <bool>true</bool>
+     </attribute>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="addVarBtn">
+       <property name="text">
+        <string>Add</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteVarBtn">
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="acceptBtn">
+       <property name="text">
+        <string>Accept</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelBtn">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>acceptBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>EnvironmentVariablesDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>293</x>
+     <y>315</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>EnvironmentVariablesDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>381</x>
+     <y>317</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>393</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deleteVarBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>EnvironmentVariablesDialog</receiver>
+   <slot>deleteVar()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>311</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>172</x>
+     <y>311</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addVarBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>EnvironmentVariablesDialog</receiver>
+   <slot>addVar()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>38</x>
+     <y>311</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>deleteVar()</slot>
+  <slot>addVar()</slot>
+ </slots>
+</ui>

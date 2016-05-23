@@ -1,10 +1,32 @@
 #include "environmentvariablesdialog.h"
 #include "ui_environmentvariablesdialog.h"
 
+#include <QMap>
 #include "constants.h"
 
-#include <QSettings>
+#include "configuration.h"
 
+EnvironmentVariablesDialog::EnvironmentVariablesDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::EnvironmentVariablesDialog)
+{
+    ui->setupUi(this);
+
+    QStringList labels;
+
+    labels << "Name" << "Value";
+
+    itemModel = new QStandardItemModel(3, 2);
+    itemModel->setHorizontalHeaderLabels(labels);
+    ui->envVars->horizontalHeader()->setStretchLastSection(true);
+
+    this->setWindowTitle(tr("Environment variables for %1").arg(titleConsole));
+    this->titleConsole = GLOBAL;
+
+    loadSettings();
+
+    ui->envVars->setModel(itemModel);
+}
 
 EnvironmentVariablesDialog::EnvironmentVariablesDialog(const QString &titleConsole, QWidget *parent) :
     QDialog(parent),
@@ -35,20 +57,18 @@ EnvironmentVariablesDialog::~EnvironmentVariablesDialog()
 
 void EnvironmentVariablesDialog::accept()
 {
-    QSettings settings(COMPANY_NAME, APP_NAME);
+    Configuration &configuration = Configuration::getInstance();
+    QMap<QString, QString> newVars;
     int totalRows = itemModel->rowCount();
-
-    settings.beginGroup(titleConsole + "/env");
-    settings.remove("");
 
     for(int r = 0; r < totalRows; r++){
         QStandardItem *itemName = itemModel->item(r, 0);
         QStandardItem *itemValue = itemModel->item(r, 1);
 
-        settings.setValue(itemName->text(), itemValue->text());
+        newVars[itemName->text()] = itemValue->text();
     }
 
-    settings.endGroup();
+    configuration.updateEnv(titleConsole, newVars);
 
     QDialog::accept();
 }
@@ -60,20 +80,20 @@ void EnvironmentVariablesDialog::reject()
 
 void EnvironmentVariablesDialog::loadSettings()
 {
-    QSettings settings(COMPANY_NAME, APP_NAME);
-
-    settings.beginGroup(titleConsole + "/env");
-    QStringList keys = settings.childKeys();
+    Configuration &configuration = Configuration::getInstance();
+    QMap<QString, QString> env;
+    QMap<QString, QString>::iterator i;
     int row = 0;
 
-    itemModel->setRowCount(keys.size());
-    foreach(QString key, keys){
-        itemModel->setItem(row, 0, new QStandardItem(key));
-        itemModel->setItem(row, 1, new QStandardItem(settings.value(key).toString()));
+    configuration.getEnv(titleConsole, env);
+
+    itemModel->setRowCount(env.size());
+    for (i = env.begin(); i != env.end(); ++i)
+    {
+        itemModel->setItem(row, 0, new QStandardItem(i.key()));
+        itemModel->setItem(row, 1, new QStandardItem(i.value()));
         row++;
     }
-
-    settings.endGroup();
 }
 
 void EnvironmentVariablesDialog::addVar()

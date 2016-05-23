@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Console manager</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/images/green-icon</normaloff>:/images/green-icon</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -38,7 +42,22 @@
      <string>Console</string>
     </property>
     <addaction name="actionNew"/>
+    <addaction name="actionGroups"/>
    </widget>
+   <widget class="QMenu" name="menuEnvironment">
+    <property name="title">
+     <string>Environment</string>
+    </property>
+    <addaction name="actionGlobal_environment_variables"/>
+   </widget>
+   <widget class="QMenu" name="menuApplication">
+    <property name="title">
+     <string>Application</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuApplication"/>
+   <addaction name="menuEnvironment"/>
    <addaction name="menuConsole"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -55,8 +74,42 @@
     <string>New</string>
    </property>
   </action>
+  <action name="actionGlobal_environment_variables">
+   <property name="text">
+    <string>Global environment variables</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionGroups">
+   <property name="text">
+    <string>Groups</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
- <connections/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>269</x>
+     <y>165</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

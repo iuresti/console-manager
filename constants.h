@@ -7,5 +7,11 @@
 #define PARAM_COMMAND       "command"
 #define PARAM_WORKING_DIR   "workingDirectory"
 
+#define GLOBAL              "_GLOBAL"
+#define TAB_INDEX           "TAB_INDEX"
+
+#define BRACES_LEN          2
+#define LEN_UUID            36
+
 #endif // CONSTANTS_H
 

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QIcon>
 
 #include "consolewidget.h"
 
@@ -19,13 +20,19 @@ public:
 
 public slots:
     void newTab();
-    void updateTabText(const QString &newText);
+    void updateTabText(const QString &newText, int tabIndex);
+    void editGlobalEnv();
+    void processStarted(int tabIndex);
+    void processStopped(int tabIndex);
 
 private:
     void newTab(const QString &tabName);
     void prepareTab(ConsoleWidget *consoleWidget, const QString &tabName);
 private:
     Ui::MainWindow *ui;
+
+    QIcon redIcon;
+    QIcon greenIcon;
 };
 
 #endif // MAINWINDOW_H

@@ -15,13 +15,21 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     consolewidget.cpp \
-    environmentvariablesdialog.cpp
+    environmentvariablesdialog.cpp \
+    associatedportswidget.cpp \
+    configuration.cpp
 
 HEADERS  += mainwindow.h \
     consolewidget.h \
     constants.h \
-    environmentvariablesdialog.h
+    environmentvariablesdialog.h \
+    associatedportswidget.h \
+    configuration.h
 
 FORMS    += mainwindow.ui \
     consolewidget.ui \
-    environmentvariablesdialog.ui
+    environmentvariablesdialog.ui \
+    associatedportswidget.ui
+
+RESOURCES += \
+    resources.qrc

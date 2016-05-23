@@ -1,9 +1,8 @@
 #include "consolewidget.h"
 #include "ui_consolewidget.h"
 #include "constants.h"
+#include "configuration.h"
 #include "environmentvariablesdialog.h"
-
-#include <QSettings>
 
 ConsoleWidget::ConsoleWidget(QWidget *parent) :
     QDialog(parent),
@@ -21,13 +20,17 @@ ConsoleWidget::ConsoleWidget(QWidget *parent) :
 ConsoleWidget::ConsoleWidget(const QString &tabName, QWidget *parent) :
     ConsoleWidget::ConsoleWidget(parent)
 {
-    QSettings settings(COMPANY_NAME, APP_NAME);
+    Configuration &configuration = Configuration::getInstance();
+    QString command;
+    QString workingDirectory;
 
-    settings.beginGroup(tabName);
+    configuration.load(tabName, command, workingDirectory);
+
     ui->title->setText(tabName);
-    ui->command->setText(settings.value(PARAM_COMMAND).toString());
-    ui->workingDirectory->setText(settings.value(PARAM_WORKING_DIR).toString());
-    settings.endGroup();
+    ui->command->setText(command);
+    ui->workingDirectory->setText(workingDirectory);
+
+
 }
 
 ConsoleWidget::~ConsoleWidget()
@@ -37,7 +40,7 @@ ConsoleWidget::~ConsoleWidget()
 
 void ConsoleWidget::titleTextEditChanged(const QString &newTitle)
 {
-    emit titleUpdated(newTitle);
+    emit titleUpdated(newTitle, property(TAB_INDEX).toInt());
 }
 
 void ConsoleWidget::toggleCommand()
@@ -55,26 +58,25 @@ void ConsoleWidget::toggleCommand()
 
 void ConsoleWidget::printProcessOutput(){
     while(process.bytesAvailable() > 0){
-        QByteArray bLine = process.readLine();
+        QByteArray bLine = process.readLine().trimmed();
         QString line(bLine);
-        ui->output->appendHtml(line);
+        if(!line.isEmpty()){
+            ui->output->appendPlainText(line);
+        }
     }
 }
 
 void ConsoleWidget::executeCommand()
 {
-    QSettings settings(COMPANY_NAME, APP_NAME);
+    Configuration &configuration = Configuration::getInstance();
     QStringList env;
 
     ui->output->clear();
     ui->commandBtn->setText("Starting...");
 
-    settings.beginGroup(ui->title->text());
-    settings.setValue(PARAM_COMMAND, ui->command->text());
-    settings.setValue(PARAM_WORKING_DIR, ui->workingDirectory->text());
-    settings.endGroup();
+    configuration.save(ui->title->text(), ui->command->text(), ui->workingDirectory->text());
 
-    prepareEnv(env);
+    configuration.getEnvironment(env, ui->title->text());
 
     process.setWorkingDirectory(ui->workingDirectory->text());
     process.setEnvironment(env);
@@ -84,17 +86,21 @@ void ConsoleWidget::executeCommand()
 }
 
 void ConsoleWidget::processStarted()
-{
+{   
     int id = process.processId();
     ui->processIdLabel->setText(QString::number(id));
 
     ui->commandBtn->setText("Stop");
+
+    emit started(property(TAB_INDEX).toInt());
 }
 
 void ConsoleWidget::processFinished(int,QProcess::ExitStatus)
 {
     ui->processIdLabel->setText("");
     ui->commandBtn->setText("Execute");
+
+    emit stopped(property(TAB_INDEX).toInt());
 }
 
 void ConsoleWidget::openEnvVarDialog()
@@ -103,22 +109,4 @@ void ConsoleWidget::openEnvVarDialog()
 
     dialog.setModal(true);
     dialog.exec();
-}
-
-void ConsoleWidget::prepareEnv(QStringList &env)
-{
-    QSettings settings(COMPANY_NAME, APP_NAME);
-
-    settings.beginGroup(ui->title->text() + "/env");
-    QStringList keys = settings.childKeys();
-
-    foreach(QString key, keys)
-    {
-        QString line;
-
-        line.append(key).append("=").append(settings.value(key).toString());
-        env << line;
-    }
-
-    settings.endGroup();
 }

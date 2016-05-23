@@ -2,21 +2,25 @@
 #include "ui_mainwindow.h"
 
 #include "constants.h"
-#include <QSettings>
-
-#define TAB_INDEX "TAB_INDEX"
+#include "environmentvariablesdialog.h"
+#include "configuration.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    redIcon(":/images/red-icon"),
+    greenIcon(":/images/green-icon"),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     connect(ui->actionNew, SIGNAL(triggered(bool)), this, SLOT(newTab()));
+    connect(ui->actionGlobal_environment_variables, SIGNAL(triggered(bool)), this, SLOT(editGlobalEnv()));
 
-    QSettings settings(COMPANY_NAME, APP_NAME);
+    Configuration &configuration = Configuration::getInstance();
 
-    QStringList groupNames = settings.childGroups();
+    QStringList groupNames;
+
+    configuration.getConsoleNames(groupNames);
 
     foreach (const QString &groupName, groupNames)
     {
@@ -45,18 +49,34 @@ void MainWindow::newTab(const QString &tabName)
 
 void MainWindow::prepareTab(ConsoleWidget *consoleWidget, const QString &tabName)
 {
-    int tabIndex = ui->tabWidget->addTab(consoleWidget, tabName);
+    int tabIndex = ui->tabWidget->addTab(consoleWidget, redIcon, tabName);
 
     consoleWidget->setProperty(TAB_INDEX, tabIndex);
 
-    connect(consoleWidget, SIGNAL(titleUpdated(const QString&)), this, SLOT(updateTabText(const QString &)));
+    connect(consoleWidget, SIGNAL(titleUpdated(const QString&, int)), this, SLOT(updateTabText(const QString &, int)));
+    connect(consoleWidget, SIGNAL(started(int)), this, SLOT(processStarted(int)));
+    connect(consoleWidget, SIGNAL(stopped(int)), this, SLOT(processStopped(int)));
 }
 
-void MainWindow::updateTabText(const QString &newText)
+void MainWindow::updateTabText(const QString &newText, int tabIndex)
 {
-    ConsoleWidget *consoleWidget= dynamic_cast<ConsoleWidget *>(sender());
-
-    int tabIndex = consoleWidget->property(TAB_INDEX).toInt();
-
     ui->tabWidget->setTabText(tabIndex, newText);
+}
+
+void MainWindow::editGlobalEnv()
+{
+    EnvironmentVariablesDialog dialog(this);
+
+    dialog.setModal(true);
+    dialog.exec();
+}
+
+void MainWindow::processStarted(int tabIndex)
+{
+    ui->tabWidget->setTabIcon(tabIndex, greenIcon);
+}
+
+void MainWindow::processStopped(int tabIndex)
+{
+ui->tabWidget->setTabIcon(tabIndex, redIcon);
 }

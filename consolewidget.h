@@ -19,7 +19,9 @@ public:
     ~ConsoleWidget();
 
 signals:
-    void titleUpdated(const QString &newTitle);
+    void titleUpdated(const QString &newTitle, int tabIndex);
+    void started(int tabIndex);
+    void stopped(int tabIndex);
 
 private slots:
     void titleTextEditChanged(const QString &newTitle);
@@ -31,7 +33,7 @@ private slots:
 
 private:
     void executeCommand();
-    void prepareEnv(QStringList &env);
+    void prepareEnv(QStringList &env, const QString &rootTitle);
 
 private:
     Ui::ConsoleWidget *ui;

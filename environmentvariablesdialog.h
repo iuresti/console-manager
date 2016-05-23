@@ -14,6 +14,7 @@ class EnvironmentVariablesDialog : public QDialog
     Q_OBJECT
 
 public:
+    explicit EnvironmentVariablesDialog(QWidget *parent = 0);
     explicit EnvironmentVariablesDialog(const QString &titleConsole, QWidget *parent = 0);
     ~EnvironmentVariablesDialog();
 
